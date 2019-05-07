@@ -10,28 +10,34 @@ var transporter = nodemailer.createTransport({
   }
 });
 
+const makeMessage = (email, game, offer, contact) => {
+  var mailOptions = {
+    from: 'the.game.swap.app@gmail.com',
+    to: email,
+    subject: 'Sorry, I need to test this',
+    text: 'I don\'t mean to spam you, I just need to see if this method works.\nSorry'
+  };
+  return mailOptions;
+}
+
+const list = [];
+
 const controller = {
     post: (req, res) => {
       /*TODO query db for users who have posted
         and structure their info to send templated emails
       */
-
-     var mailOptions = {
-      from: 'the.game.swap.app@gmail.com',
-      to: 'adam_reback@yahoo.com',
-      cc: ['Liezelanne9@gmail.com', 'Nathanaelmullins@gmail.com', 'Davidfred1994@gmail.com'],
-      subject: 'I did the thing',
-      text: 'I figured out how to send automated emails.  The mandrill thing didn\'t work, but this method does. :) \n --Adam'
-    };
     
-    transporter.sendMail(mailOptions, function(error, info){
-      if (error) {
-        res.status(404).send(error);
-      } else {
-        res.status(201).send('Email sent: ' + info.response);
-      }
-    });
+    for (var x = 0; x < list.length; x++) {
+      transporter.sendMail(makeMessage(list[x]), function(error, info){
+        if (error) {
+          res.status(404).send(error);
+          return;
+        }
+      });
     }
+    res.status(201).send('Emails sent');
+  }
 }
 
 module.exports = controller;
