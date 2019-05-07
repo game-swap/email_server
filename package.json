@@ -22,8 +22,8 @@
     "axios": "^0.18.0",
     "body-parser": "^1.18.3",
     "express": "^4.16.4",
-    "jquery": "^3.1.1",
     "morgan": "^1.9.1",
+    "nodemailer": "^6.1.1",
     "nodemon": "^1.18.10"
   }
 }

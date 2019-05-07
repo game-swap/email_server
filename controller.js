@@ -1,65 +1,36 @@
 // TODO: require db
-const $ = require('jquery');
-const axios = require('axios');
-const API = require('./config.js').API;
+const nodemailer = require('nodemailer');
+const { pass } = require('./config.js');
+
+var transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: 'the.game.swap.app@gmail.com',
+    pass: pass
+  }
+});
 
 const controller = {
     post: (req, res) => {
-        axios({
-            method: 'POST',
-            url: "https://mandrillapp.com/api/1.0/messages/send.json",
-            data: {
-              'key': API,
-              'message': {
-                'from_email': 'the.game.swap.app@gmail.com',
-                'from_name': 'Game Swap',
-                'to': [
-                    // {
-                    //   'email': 'RECIPIENT_NO_1@EMAIL.HERE',
-                    //   'type': 'to'
-                    // },
-                    {
-                      'email': 'adam_reback@yahoo.com',
-                      'type': 'to'
-                    }
-                  ],
-                'autotext': 'true',
-                'subject': 'You have a trade offer!',
-                'text': 'The world says hello back',
-                'async': false
-              }
-            }
-        })
-        .then(res.send('sent'))
-        .catch(err => console.error(err))
+      /*TODO query db for users who have posted
+        and structure their info to send templated emails
+      */
 
-        // $.ajax({
-        //     type: "POST",
-        //     url: "https://mandrillapp.com/api/1.0/messages/send.json",
-        //     data: {
-        //       'key': API,
-        //       'message': {
-        //         'from_email': 'the.game.swap.app@gmail.com',
-        //         'from_name': 'Game Swap',
-        //         'to': [
-        //             // {
-        //             //   'email': 'RECIPIENT_NO_1@EMAIL.HERE',
-        //             //   'type': 'to'
-        //             // },
-        //             {
-        //               'email': 'adam_reback@yahoo.com',
-        //               'type': 'to'
-        //             }
-        //           ],
-        //         'autotext': 'true',
-        //         'subject': 'You have a trade offer!',
-        //         'text': 'The world says hello back'
-        //       }
-        //     }
-        //    }).done(function(response) {
-        //      console.log(response); // if you're into that sorta thing
-        //    });
-        // res.status(201).send(req.body)
+     var mailOptions = {
+      from: 'the.game.swap.app@gmail.com',
+      to: 'adam_reback@yahoo.com',
+      cc: ['Liezelanne9@gmail.com', 'Nathanaelmullins@gmail.com', 'Davidfred1994@gmail.com'],
+      subject: 'I did the thing',
+      text: 'I figured out how to send automated emails.  The mandrill thing didn\'t work, but this method does. :) \n --Adam'
+    };
+    
+    transporter.sendMail(mailOptions, function(error, info){
+      if (error) {
+        res.status(404).send(error);
+      } else {
+        res.status(201).send('Email sent: ' + info.response);
+      }
+    });
     }
 }
 
