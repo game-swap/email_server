@@ -1,4 +1,4 @@
-// TODO: require db
+const { Users, Games, Consoles, Offers } = require('./models.js');
 const nodemailer = require('nodemailer');
 const { pass } = require('./config.js');
 
@@ -21,7 +21,7 @@ const makeMessage = (emails, game, offer, contact) => {
   return mailOptions;
 }
 
-const list = [];
+const list = ['adam_reback@yahoo.com'];
 
 const controller = {
     post: (req, res) => {
@@ -41,6 +41,7 @@ const controller = {
         if (error) {
           res.status(404).send(error);
         } else {
+          //TODO decrease user's number of emails remaining
           res.status(201).send('Emails sent');
         }
       });
