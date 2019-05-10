@@ -87,7 +87,7 @@ const Offers = sequelize.define('offers', {
   }
 }, {
   timestamps: true,
-  updatedAt: false,
+  updatedAt: false
 });
 
 sequelize.sync()

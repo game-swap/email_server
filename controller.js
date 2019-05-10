@@ -1,4 +1,4 @@
-const { Users, Games, Consoles, Offers } = require('./models.js');
+const db = require('./db.js');
 const nodemailer = require('nodemailer');
 const { pass } = require('./config.js');
 
@@ -21,8 +21,6 @@ const makeMessage = (emails, game, offer, contact) => {
   return mailOptions;
 }
 
-const list = ['adam_reback@yahoo.com'];
-
 const controller = {
     post: (req, res) => {
       /*TODO query db for users who have posted
@@ -36,16 +34,31 @@ const controller = {
         }
       */
 
-      //list is temporary, will be replaced with the list of emails to have messages sent to them
-      transporter.sendMail(makeMessage(list), function(error, info) {
-        if (error) {
-          res.status(404).send(error);
-        } else {
-          //TODO decrease user's number of emails remaining
-          res.status(201).send('Emails sent');
+        db.query(`\
+          SELECT email FROM users u\
+          INNER JOIN offers o\
+          ON u.user_id = o.user_id\
+          INNER JOIN games g\
+          ON o.game_id = g.game_id\
+          WHERE g.game_id = ${req.body.game_id}\
+          AND o.platform_id = ${req.body.platform_id}\
+          `)
+          .then(data => {
+            var emails = [];
+            for (var x = 0; x < data.rows.length; x++) {
+              emails.push(data.rows[x].email)
+            }
+            transporter.sendMail(makeMessage(emails), function(error, info) {
+              if (error) {
+                res.status(404).send(error);
+              } else {
+                //TODO decrease user's number of emails remaining
+                res.status(201).send('Emails sent');
+              }
+            });
+          })
+          .catch(err => res.status(404).send(err))
         }
-      });
-    }
-}
+      }
 
 module.exports = controller;
